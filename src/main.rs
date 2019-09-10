@@ -1,5 +1,5 @@
 use std::time::Instant;
-use dbwgc_sys::{DbwGcAllocator, GC_init, GC_collect_a_little, GC_set_free_space_divisor, GC_get_min_bytes_allocd, GC_set_min_bytes_allocd};
+use dbwgc_sys::{DbwGcAllocator, GC_init, GC_collect_a_little, GC_set_free_space_divisor};
 
 #[global_allocator]
 static A: DbwGcAllocator = DbwGcAllocator;
@@ -7,22 +7,17 @@ static A: DbwGcAllocator = DbwGcAllocator;
 fn main() {
     unsafe {
         GC_init();
-        println!("{}", GC_get_min_bytes_allocd());
-        GC_set_min_bytes_allocd(1024*1024*512);
         GC_set_free_space_divisor(1);
     }
 
     let start = Instant::now();
-    println!("{:?}", fibonacci(Scm::from_int(30)));
+    println!("{:?}", fibonacci(Scm::from_int(40)));
     println!("{:?}", Instant::now() - start);
 
     let start = Instant::now();
     let mut x = reverse(make_list(1000));
-    for _ in 0..100000 {
+    for _ in 0..30000 {
         x = reverse(make_list(1000));
-        unsafe {
-            GC_collect_a_little();
-        }
     }
     println!("{:?}", Instant::now() - start);
 }
